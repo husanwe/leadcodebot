@@ -1,0 +1,16 @@
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN}
+    develop:
+      watch:
+        - path: ./deno.json
+          action: rebuild
+        - path: ./deno.lock
+          action: rebuild
+        - path: ./
+          target: /app
+          action: sync

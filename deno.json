@@ -1,5 +1,9 @@
 {
   "imports": {
     "grammy": "https://deno.land/x/grammy@v1.44.0/mod.ts"
+  },
+  "tasks": {
+    "dev": "docker compose -f docker-compose.dev.yaml watch",
+    "down": "docker compose -f docker-compose.dev.yaml down -v"
   }
 }

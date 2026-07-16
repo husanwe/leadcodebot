@@ -1,0 +1,4 @@
+FROM denoland/deno:2.9.2
+WORKDIR /app
+COPY . .
+CMD [ "deno", "run", "--watch", "-INE", "src/main.ts" ]
