@@ -1,4 +1,5 @@
 import { Bot } from "grammy";
+import { privateChat } from "./private/composer.ts";
 
 const botToken = Deno.env.get("BOT_TOKEN");
 if (botToken === undefined) {
@@ -8,5 +9,4 @@ if (botToken === undefined) {
 
 export const bot = new Bot(botToken);
 
-bot.command("start", (ctx) => ctx.reply("Welcome! Up and running."));
-bot.on("message", (ctx) => ctx.reply("Got another message!"));
+bot.chatType("private", privateChat);

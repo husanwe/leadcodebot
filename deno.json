@@ -6,8 +6,6 @@
     "grammy": "https://deno.land/x/grammy@v1.44.0/mod.ts"
   },
   "tasks": {
-    "dc:watch": "docker compose -f docker-compose.dev.yaml watch",
-    "dc:down": "docker compose -f docker-compose.dev.yaml down -v",
     "db:push": "deno --env -A --node-modules-dir npm:drizzle-kit@rc push"
   }
 }
