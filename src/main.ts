@@ -1,6 +1,7 @@
 import { bot } from "./bot.ts";
+import { getEnv } from "./util.ts";
 
-if (Deno.env.get("DENO_DEPLOY") === "true") {
+if (getEnv("DENO_DEPLOY") === "true") {
   const { startWebhook } = await import("./webhook.ts");
   startWebhook(bot);
 } else {

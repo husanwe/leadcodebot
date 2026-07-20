@@ -3,9 +3,11 @@
     "@neondatabase/serverless": "npm:@neondatabase/serverless@^1.1.0",
     "drizzle-kit": "npm:drizzle-kit@1.0.0-rc.4",
     "drizzle-orm": "npm:drizzle-orm@1.0.0-rc.4",
-    "grammy": "https://deno.land/x/grammy@v1.44.0/mod.ts"
+    "grammy": "https://deno.land/x/grammy@v1.45.1/mod.ts",
+    "@grammyjs/conversations": "https://deno.land/x/grammy_conversations@v2.1.1/mod.ts"
   },
   "tasks": {
+    "start:dev": "deno watch --env -INE src/main.ts",
     "db:push": "deno --env -A --node-modules-dir npm:drizzle-kit@rc push"
   }
 }

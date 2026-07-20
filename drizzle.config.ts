@@ -1,11 +1,7 @@
 import { defineConfig } from "drizzle-kit";
+import { getEnv } from "./src/util.ts";
 
-const databaseUrl = Deno.env.get("DATABASE_URL");
-if (databaseUrl === undefined) {
-  console.error("DATABASE_URL is not provided!");
-  Deno.exit(1);
-}
-
+const databaseUrl = getEnv("DATABASE_URL");
 export default defineConfig({
   out: "./drizzle",
   schema: "./src/schema.ts",

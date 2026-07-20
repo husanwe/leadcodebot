@@ -63,6 +63,5 @@ export const fetchLeetcodeProfile = async (
   if (response.ok) {
     return (await response.json()) as LeetcodeProfile;
   }
-
   throw new Error(`Error fetching LeetCode profile: ${response.statusText}`);
 };

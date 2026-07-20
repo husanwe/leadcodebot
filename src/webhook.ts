@@ -1,13 +1,10 @@
 import { Bot, webhookCallback } from "grammy";
+import { BotContext } from "./bot.ts";
+import { getEnv } from "./util.ts";
 
-const webhookUrl = Deno.env.get("WEBHOOK_URL");
-if (webhookUrl === undefined) {
-  console.error("WEBHOOK_URL is not provided!");
-  Deno.exit(1);
-}
-export const startWebhook = async (bot: Bot) => {
+const webhookUrl = getEnv("WEBHOOK_URL");
+export const startWebhook = async (bot: Bot<BotContext>) => {
   const handleUpdate = webhookCallback(bot, "std/http");
-
   Deno.serve(async (req) => {
     if (req.method === "POST") {
       const url = new URL(req.url);
@@ -21,6 +18,5 @@ export const startWebhook = async (bot: Bot) => {
     }
     return new Response("Not found", { status: 404 });
   });
-
   await bot.api.setWebhook(webhookUrl + "/bot");
 };

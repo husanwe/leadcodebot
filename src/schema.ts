@@ -6,10 +6,16 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
+const timestamps = {
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull().$onUpdate(() => new Date()),
+};
+
 export const usersTable = pgTable("users", {
   id: bigint({ mode: "number" }).primaryKey(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().$onUpdate(() => new Date()),
+  ...timestamps,
 });
 
 export const profilesTable = pgTable("profiles", {
@@ -17,6 +23,5 @@ export const profilesTable = pgTable("profiles", {
   username: varchar({ length: 30 }).notNull().unique(),
   userId: bigint("user_id", { mode: "number" }).notNull().unique()
     .references(() => usersTable.id, { onDelete: "cascade" }),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().$onUpdate(() => new Date()),
+  ...timestamps,
 });

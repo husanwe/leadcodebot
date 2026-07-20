@@ -1,12 +1,9 @@
 import { Bot } from "grammy";
-import { privateChat } from "./private/composer.ts";
+import { privateChat, PrivateContext } from "./private/composer.ts";
+import { getEnv } from "./util.ts";
 
-const botToken = Deno.env.get("BOT_TOKEN");
-if (botToken === undefined) {
-  console.error("BOT_TOKEN is not provided!");
-  Deno.exit(1);
-}
-
-export const bot = new Bot(botToken);
+const botToken = getEnv("BOT_TOKEN");
+export type BotContext = PrivateContext;
+export const bot = new Bot<BotContext>(botToken);
 
 bot.chatType("private", privateChat);
