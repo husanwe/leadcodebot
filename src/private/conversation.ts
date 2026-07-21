@@ -22,7 +22,6 @@ export const profileRegistration: ConvoBuilder = async (convo, ctx) => {
     usernameMsg = await convo.waitFor("message:text", {
       otherwise: (ctx) => ctx.reply("Please send a text message!"),
     });
-
     usernameCheck = await db.select().from(profilesTable).where(
       eq(profilesTable.username, usernameMsg.msg.text),
     );

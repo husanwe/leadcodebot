@@ -16,7 +16,6 @@ export const handleStartCommand: CommandHandler = async (ctx) => {
       (await ctx.session).isUserExist = true;
     }
   }
-
   await ctx.reply(
     "Welcome to board!\nRegister your leetcode username using /register command.",
   );
