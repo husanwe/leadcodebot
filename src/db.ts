@@ -5,3 +5,4 @@ import { getEnv } from "./util.ts";
 const databaseUrl = getEnv("DATABASE_URL");
 const sql = neon(databaseUrl);
 export const db = drizzle({ client: sql });
+export const kv = await Deno.openKv();

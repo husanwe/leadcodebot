@@ -1,5 +1,6 @@
 {
   "imports": {
+    "@grammyjs/storage-denokv": "jsr:@grammyjs/storage-denokv@^2.6.0",
     "@neondatabase/serverless": "npm:@neondatabase/serverless@^1.1.0",
     "drizzle-kit": "npm:drizzle-kit@1.0.0-rc.4",
     "drizzle-orm": "npm:drizzle-orm@1.0.0-rc.4",
