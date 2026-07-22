@@ -6,17 +6,21 @@ import { profilesTable } from "../schema.ts";
 import { PrivateContext } from "./composer.ts";
 
 const titleSlug = Deno.env.get("TITLE_SLUG") || "add-two-integers";
+
 type CallbackHandler = CallbackQueryMiddleware<PrivateContext>;
 
 export const verifySubmissionOnTime: CallbackHandler = async (ctx) => {
-  const { profile: username } = await ctx.session;
+  const { lUsername: username } = await ctx.session;
+
   if (!username) {
     await ctx.answerCallbackQuery("Time is up. You are too late.");
     await ctx.editMessageReplyMarkup({ reply_markup: undefined });
     return;
   }
+
   const userId = ctx.from.id;
   const { data } = await fetchLeetcodeProfile(username, 1);
+
   for (const submission of data.recentSubmissionList) {
     if (
       submission.titleSlug === titleSlug &&
@@ -30,5 +34,5 @@ export const verifySubmissionOnTime: CallbackHandler = async (ctx) => {
     }
   }
   await ctx.editMessageReplyMarkup({ reply_markup: undefined });
-  await bot.api.sendMessage(userId, "You haven't solve the problem on time.");
+  await bot.api.sendMessage(userId, "You haven't solve the problem in time.");
 };

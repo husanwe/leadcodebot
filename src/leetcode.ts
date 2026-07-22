@@ -60,8 +60,9 @@ export const fetchLeetcodeProfile = async (
     }),
   });
 
-  if (response.ok) {
-    return (await response.json()) as LeetcodeProfile;
+  if (!response.ok) {
+    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
   }
-  throw new Error(`Error fetching LeetCode profile: ${response.statusText}`);
+
+  return (await response.json()) as LeetcodeProfile;
 };
