@@ -13,12 +13,9 @@ import {
   LazySessionFlavor,
 } from "grammy";
 import { kv } from "../db.ts";
+import { verifySubmissionOnTime } from "./callback.ts";
 import { handleRegisterCommand, handleStartCommand } from "./command.ts";
 import { profileRegistration } from "./conversation.ts";
-
-interface SessionData {
-  isUserExist: boolean;
-}
 
 export type PrivateBaseContext = ChatTypeContext<Context, "private">;
 export type PrivateContext = ChatTypeContext<
@@ -28,8 +25,12 @@ export type PrivateContext = ChatTypeContext<
 
 export const privateChat = new Composer<PrivateContext>();
 
+interface SessionData {
+  profile?: string;
+}
+
 privateChat.use(lazySession({
-  initial: () => ({ isUserExist: false }),
+  initial: () => ({ profile: undefined }),
   storage: enhanceStorage({
     storage: new DenoKVAdapter(kv),
     millisecondsToLive: 7 * 24 * 3600 * 1000,
@@ -39,3 +40,4 @@ privateChat.use(conversations());
 privateChat.use(createConversation(profileRegistration));
 privateChat.command("start", handleStartCommand);
 privateChat.command("register", handleRegisterCommand);
+privateChat.callbackQuery("verifySubmissionOnTime", verifySubmissionOnTime);

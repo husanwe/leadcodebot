@@ -1,13 +1,14 @@
 import { ConversationBuilder } from "@grammyjs/conversations";
 import { eq } from "drizzle-orm";
+import { InlineKeyboard } from "grammy";
 import { db } from "../db.ts";
 import { profilesTable } from "../schema.ts";
 import { PrivateBaseContext, PrivateContext } from "./composer.ts";
 
-type ConvoBuilder = ConversationBuilder<PrivateContext, PrivateBaseContext>;
+type ConvoHandler = ConversationBuilder<PrivateContext, PrivateBaseContext>;
 const titleSlug = Deno.env.get("TITLE_SLUG") || "add-two-integers";
 
-export const profileRegistration: ConvoBuilder = async (convo, ctx) => {
+export const profileRegistration: ConvoHandler = async (convo, ctx) => {
   const existingProfile = await db.select().from(profilesTable).where(
     eq(profilesTable.userId, ctx.from.id),
   );
@@ -26,11 +27,21 @@ export const profileRegistration: ConvoBuilder = async (convo, ctx) => {
       eq(profilesTable.username, usernameMsg.msg.text),
     );
     if (usernameCheck.length) {
-      await ctx.reply("The username already registered.");
+      await ctx.reply("The username is already registered.");
     }
   } while (usernameCheck.length);
 
+  await convo.external(async (ctx) =>
+    (await ctx.session).profile = usernameMsg.msg.text
+  );
+
+  const verifySubmissionButton = new InlineKeyboard();
+  verifySubmissionButton.text(
+    "I've just solved the problem",
+    "verifySubmissionOnTime",
+  );
   await ctx.reply(
-    `Solve the problem in two minutes.\nhttps://leetcode.com/problems/${titleSlug}`,
+    `Solve the problem in ten minutes.\nhttps://leetcode.com/problems/${titleSlug}`,
+    { reply_markup: verifySubmissionButton },
   );
 };

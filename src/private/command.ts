@@ -7,14 +7,10 @@ import { PrivateContext } from "./composer.ts";
 type CommandHandler = CommandMiddleware<PrivateContext>;
 
 export const handleStartCommand: CommandHandler = async (ctx) => {
-  const { isUserExist } = await ctx.session;
-  if (!isUserExist) {
-    const existingUser = await db.select().from(usersTable)
-      .where(eq(usersTable.id, ctx.from.id));
-    if (!existingUser.length) {
-      await db.insert(usersTable).values({ id: ctx.from.id });
-      (await ctx.session).isUserExist = true;
-    }
+  const existingUser = await db.select().from(usersTable)
+    .where(eq(usersTable.id, ctx.from.id));
+  if (!existingUser.length) {
+    await db.insert(usersTable).values({ id: ctx.from.id });
   }
   await ctx.reply(
     "Welcome to board!\nRegister your leetcode username using /register command.",
