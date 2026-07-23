@@ -3,16 +3,15 @@ import {
   conversations,
   createConversation,
 } from "@grammyjs/conversations";
-import { DenoKVAdapter } from "@grammyjs/storage-denokv";
+import { RedisAdapter } from "@grammyjs/storage-redis";
 import {
   ChatTypeContext,
   Composer,
   Context,
-  enhanceStorage,
   lazySession,
   LazySessionFlavor,
 } from "grammy";
-import { kv } from "../db.ts";
+import { redis } from "../db.ts";
 import { verifySubmissionOnTime } from "./callback.ts";
 import { handleRegisterCommand, handleStartCommand } from "./command.ts";
 import { profileRegistration } from "./conversation.ts";
@@ -31,12 +30,8 @@ type SessionData = {
 
 privateChat.use(lazySession({
   initial: () => ({ lUsername: undefined }),
-  storage: enhanceStorage({
-    storage: new DenoKVAdapter(kv),
-    millisecondsToLive: 7 * 24 * 3600 * 1000,
-  }),
+  storage: new RedisAdapter({ instance: redis, ttl: 3 * 24 * 3600 }),
 }));
-
 privateChat.use(conversations());
 privateChat.use(createConversation(profileRegistration));
 privateChat.command("start", handleStartCommand);
