@@ -16,9 +16,7 @@ export const handleStartCommand: CommandHandler = async (ctx) => {
     await db.insert(usersTable).values({ id: ctx.from.id });
   }
 
-  await ctx.reply(
-    "Welcome to board!\nRegister your leetcode username using /register command.",
-  );
+  await ctx.reply(ctx.text.startMsg());
 };
 
 export const handleRegisterCommand: CommandHandler = async (ctx) => {

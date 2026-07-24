@@ -1,6 +1,6 @@
 import { ConversationBuilder } from "@grammyjs/conversations";
 import { eq } from "drizzle-orm";
-import { ChatTypeContext, Context, InlineKeyboard } from "grammy";
+import { InlineKeyboard } from "grammy";
 import { db } from "../db.ts";
 import { fetchLeetcodeProfile } from "../leetcode.ts";
 import { profilesTable } from "../schema.ts";
@@ -8,10 +8,7 @@ import { PrivateContext } from "./composer.ts";
 
 const titleSlug = Deno.env.get("TITLE_SLUG") || "add-two-integers";
 
-type ConvoHandler = ConversationBuilder<
-  PrivateContext,
-  ChatTypeContext<Context, "private">
->;
+type ConvoHandler = ConversationBuilder<PrivateContext, PrivateContext>;
 
 export const profileRegistration: ConvoHandler = async (convo, ctx) => {
   const [existingUser] = await db.select()
@@ -20,7 +17,7 @@ export const profileRegistration: ConvoHandler = async (convo, ctx) => {
     .limit(1);
 
   if (existingUser) {
-    await ctx.reply("You are already registered.");
+    await ctx.reply(ctx.text.alreadyRegistered());
     return;
   }
 
@@ -28,10 +25,10 @@ export const profileRegistration: ConvoHandler = async (convo, ctx) => {
   let isUsernameValid = false;
 
   do {
-    await ctx.reply("Enter your leetcode username:");
+    await ctx.reply(ctx.text.enterUsername());
 
     const messageCtx = await convo.waitFor("message:text", {
-      otherwise: (ctx) => ctx.reply("Please send a text message!"),
+      otherwise: (ctx) => ctx.reply(ctx.text.sendTextMessage()),
     });
 
     username = messageCtx.msg.text.trim().toLowerCase();
@@ -42,7 +39,7 @@ export const profileRegistration: ConvoHandler = async (convo, ctx) => {
       .limit(1);
 
     if (duplicateProfile) {
-      await ctx.reply("The username is already registered by someone else.");
+      await ctx.reply(ctx.text.usernameTaken());
       continue;
     }
 
@@ -53,9 +50,7 @@ export const profileRegistration: ConvoHandler = async (convo, ctx) => {
     if (errors) {
       for (const error of errors) {
         if (error.message === "That user does not exist.") {
-          await ctx.reply(
-            "That LeetCode user does not exist. Please check the spelling.",
-          );
+          await ctx.reply(ctx.text.userNotFound());
           break;
         }
       }
@@ -69,10 +64,10 @@ export const profileRegistration: ConvoHandler = async (convo, ctx) => {
   } while (!isUsernameValid);
 
   const verifySubmissionButton = new InlineKeyboard()
-    .text("I've just solved the problem", "verifySubmissionOnTime");
+    .text(ctx.text.verifySubmission(), "verifySubmissionOnTime");
 
   await ctx.reply(
-    `Solve the problem in ten minutes.\nhttps://leetcode.com/problems/${titleSlug}`,
+    ctx.text.solveProblem(`https://leetcode.com/problems/${titleSlug}`),
     { reply_markup: verifySubmissionButton },
   );
 };

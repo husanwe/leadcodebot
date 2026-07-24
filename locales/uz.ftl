@@ -1,0 +1,11 @@
+start-cmd = 🏫 LeetCode Bot ga xush kelibsiz!
+already-registered = Siz allaqachon ro'yxatdan o'tgansiz.
+enter-leetcode-username = LeetCode foydalanuvchi nomingizni kiriting:
+send-text-message = Iltimos, matn xabar yuboring!
+username-taken = Bu foydalanuvchi nomi allaqachon boshqa tomonidan ro'yxatdan o'tgan.
+user-not-found = Bunday LeetCode foydalanuvchisi mavjud emas. Iltimos, imloni tekshiring.
+solve-problem = Muammoni o'n daqiqa ichida hal qiling.
+verify-submission = Men muammoni hal qildim
+successfully-registered = Siz muvaffaqiyatli ro'yxatdan o'tdingiz!
+submission-time-up = Siz muammoni o'z vaqtida hal qila olmadingiz.
+time-is-up = Vaqt tugadi. Siz juda kech qoldingiz.

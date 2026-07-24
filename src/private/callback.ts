@@ -13,7 +13,7 @@ export const verifySubmissionOnTime: CallbackHandler = async (ctx) => {
   const { lUsername: username } = await ctx.session;
 
   if (!username) {
-    await ctx.answerCallbackQuery("Time is up. You are too late.");
+    await ctx.answerCallbackQuery(ctx.text.timeIsUp());
     await ctx.editMessageReplyMarkup({ reply_markup: undefined });
     return;
   }
@@ -29,10 +29,10 @@ export const verifySubmissionOnTime: CallbackHandler = async (ctx) => {
     ) {
       await db.insert(profilesTable).values({ username, userId });
       await ctx.editMessageReplyMarkup({ reply_markup: undefined });
-      await bot.api.sendMessage(userId, "You are successfully registered!");
+      await bot.api.sendMessage(userId, ctx.text.successfullyRegistered());
       return;
     }
   }
   await ctx.editMessageReplyMarkup({ reply_markup: undefined });
-  await bot.api.sendMessage(userId, "You haven't solve the problem in time.");
+  await bot.api.sendMessage(userId, ctx.text.submissionTimeUp());
 };

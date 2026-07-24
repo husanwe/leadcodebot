@@ -1,0 +1,11 @@
+start-cmd = 🏫 Добро пожаловать в LeetCode Bot!
+already-registered = Вы уже зарегистрированы.
+enter-leetcode-username = Введите ваше имя пользователя на LeetCode:
+send-text-message = Пожалуйста, отправьте текстовое сообщение!
+username-taken = Это имя пользователя уже зарегистрировано кем-то другим.
+user-not-found = Пользователь LeetCode не существует. Проверьте правильность написания.
+solve-problem = Решите задачу за десять минут.
+verify-submission = Я только что решил задачу
+successfully-registered = Вы успешно зарегистрированы!
+submission-time-up = Вы не решили задачу вовремя.
+time-is-up = Время вышло. Вы опоздали.
