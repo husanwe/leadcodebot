@@ -16,11 +16,12 @@ import { verifySubmissionOnTime } from "./callback.ts";
 import { handleRegisterCommand, handleStartCommand } from "./command.ts";
 import { profileRegistration } from "./conversation.ts";
 
-export type ConversationContext = ChatTypeContext<Context, "private">;
-export type PrivateContext = ChatTypeContext<
-  ConversationFlavor<Context> & LazySessionFlavor<SessionData>,
-  "private"
->;
+type FlavoredContext =
+  & Context
+  & ConversationFlavor<Context>
+  & LazySessionFlavor<SessionData>;
+
+export type PrivateContext = ChatTypeContext<FlavoredContext, "private">;
 
 export const privateChat = new Composer<PrivateContext>();
 
@@ -28,7 +29,7 @@ type SessionData = {
   lUsername?: string;
 };
 
-privateChat.use(lazySession({
+privateChat.use(lazySession<SessionData, PrivateContext>({
   initial: () => ({ lUsername: undefined }),
   storage: new RedisAdapter({ instance: redis, ttl: 3 * 24 * 3600 }),
 }));

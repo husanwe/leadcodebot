@@ -1,14 +1,17 @@
 import { ConversationBuilder } from "@grammyjs/conversations";
 import { eq } from "drizzle-orm";
-import { InlineKeyboard } from "grammy";
+import { ChatTypeContext, Context, InlineKeyboard } from "grammy";
 import { db } from "../db.ts";
 import { fetchLeetcodeProfile } from "../leetcode.ts";
 import { profilesTable } from "../schema.ts";
-import { ConversationContext, PrivateContext } from "./composer.ts";
+import { PrivateContext } from "./composer.ts";
 
 const titleSlug = Deno.env.get("TITLE_SLUG") || "add-two-integers";
 
-type ConvoHandler = ConversationBuilder<PrivateContext, ConversationContext>;
+type ConvoHandler = ConversationBuilder<
+  PrivateContext,
+  ChatTypeContext<Context, "private">
+>;
 
 export const profileRegistration: ConvoHandler = async (convo, ctx) => {
   const [existingUser] = await db.select()
