@@ -18,7 +18,7 @@ const profileQuery =
     }
   }`;
 
-type SubmissionNum = {
+type SubmissionCount = {
   difficulty: "All" | "Easy" | "Medium" | "Hard";
   submissions: number;
   count: number;
@@ -31,11 +31,11 @@ type SubmissionList = {
   time: string;
 };
 
-type LeetcodeProfile = {
+type LeetcodeProfileResponse = {
   data: {
     matchedUser: {
       submitStats: {
-        acSubmissionNum: SubmissionNum[];
+        acSubmissionNum: SubmissionCount[];
       };
     };
     recentSubmissionList: SubmissionList[];
@@ -64,5 +64,5 @@ export const fetchLeetcodeProfile = async (
     throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
   }
 
-  return (await response.json()) as LeetcodeProfile;
+  return (await response.json()) as LeetcodeProfileResponse;
 };

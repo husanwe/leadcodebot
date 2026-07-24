@@ -5,6 +5,7 @@ import {
 } from "@grammyjs/conversations";
 import { I18nFlavor } from "@grammyjs/i18n";
 import { RedisAdapter } from "@grammyjs/storage-redis";
+import { eq } from "drizzle-orm";
 import {
   ChatTypeContext,
   Composer,
@@ -12,32 +13,59 @@ import {
   lazySession,
   LazySessionFlavor,
 } from "grammy";
-import { redis } from "../db.ts";
+import { db, redis } from "../db.ts";
+import { users } from "../schema.ts";
 import { createText, Text } from "../text.ts";
-import { verifySubmissionOnTime } from "./callback.ts";
-import { handleRegisterCommand, handleStartCommand } from "./command.ts";
-import { profileRegistration } from "./conversation.ts";
+import {
+  handleSetEnglish,
+  handleSetRussian,
+  handleSetUzbek,
+  handleVerifySubmission,
+} from "./callback.ts";
+import {
+  handleLanguageCommand,
+  handleRegisterCommand,
+  handleStartCommand,
+} from "./command.ts";
+import { registerProfile } from "./conversation.ts";
 import { i18n } from "./i18n.ts";
 
-type FlavoredContext =
+type BaseContext =
   & Context
   & ConversationFlavor<Context>
-  & LazySessionFlavor<SessionData>
+  & LazySessionFlavor<Session>
   & I18nFlavor
   & { text: Text };
 
-export type PrivateContext = ChatTypeContext<FlavoredContext, "private">;
+export type PrivateContext = ChatTypeContext<BaseContext, "private">;
 
 export const privateChat = new Composer<PrivateContext>();
 
-type SessionData = {
-  lUsername?: string;
+type Session = {
+  username?: string;
+  __language_code?: string;
 };
 
-privateChat.use(lazySession<SessionData, PrivateContext>({
-  initial: () => ({ lUsername: undefined }),
+privateChat.use(lazySession<Session, PrivateContext>({
+  initial: () => ({ username: undefined }),
   storage: new RedisAdapter({ instance: redis, ttl: 3 * 24 * 3600 }),
 }));
+
+privateChat.use(async (ctx, next) => {
+  const session = await ctx.session;
+  if (!session.__language_code) {
+    const [user] = await db.select({ locale: users.locale })
+      .from(users)
+      .where(eq(users.id, ctx.from.id))
+      .limit(1);
+
+    if (user?.locale) {
+      session.__language_code = user.locale;
+    }
+  }
+  return next();
+});
+
 privateChat.use(i18n);
 privateChat.use((ctx, next) => {
   ctx.text = createText(ctx.t.bind(ctx));
@@ -45,7 +73,16 @@ privateChat.use((ctx, next) => {
 });
 
 privateChat.use(conversations());
-privateChat.use(createConversation(profileRegistration));
+privateChat.use(
+  createConversation(registerProfile, {
+    maxMillisecondsToWait: 5 * 60 * 1000,
+  }),
+);
+
 privateChat.command("start", handleStartCommand);
 privateChat.command("register", handleRegisterCommand);
-privateChat.callbackQuery("verifySubmissionOnTime", verifySubmissionOnTime);
+privateChat.command("language", handleLanguageCommand);
+privateChat.callbackQuery("verify-submission", handleVerifySubmission);
+privateChat.callbackQuery("set-uzbek", handleSetUzbek);
+privateChat.callbackQuery("set-english", handleSetEnglish);
+privateChat.callbackQuery("set-russian", handleSetRussian);

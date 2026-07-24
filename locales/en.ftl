@@ -1,11 +1,20 @@
-start-cmd = 🏫 Welcome to LeetCode Bot!
-already-registered = You are already registered.
-enter-leetcode-username = Enter your LeetCode username:
-send-text-message = Please send a text message!
-username-taken = This username is already registered by someone else.
-user-not-found = That LeetCode user does not exist. Please check the spelling.
-solve-problem = Solve the problem in ten minutes.
-verify-submission = I've just solved the problem
-successfully-registered = You are successfully registered!
-submission-time-up = You haven't solved the problem in time.
-time-is-up = Time is up. You are too late.
+start-message = 👋 Welcome to LeetCode Bot!
+
+  Available commands:
+  /register - Register your LeetCode username
+  /language - Change language
+already-registered = ✅ You're already registered!
+enter-leetcode-username = 👤 Enter your LeetCode username:
+send-text-message = 💬 Please send a text message.
+username-taken = ❌ That username is already taken.
+user-not-found = 🔍 LeetCode user not found. Check the spelling and try again.
+solve-problem = ⏰ Solve this problem in 10 minutes:
+verify-submission = ✅ I solved it!
+successfully-registered = 🎉 You're all set! Welcome aboard!
+submission-time-up = ⏳ You didn't solve it in time. Try again!
+time-is-up = ⏳ Time's up! Better luck next time.
+select-language = 🌐 Select your preferred language:
+language-uzbek = 🇺🇿 Uzbek
+language-english = 🇬🇧 English
+language-russian = 🇷🇺 Russian
+language-set = 🇬🇧 Language set to English!

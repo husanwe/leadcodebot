@@ -1,45 +1,51 @@
 import { ConversationBuilder } from "@grammyjs/conversations";
 import { eq } from "drizzle-orm";
-import { InlineKeyboard } from "grammy";
+import { ChatTypeContext, Context, InlineKeyboard } from "grammy";
 import { db } from "../db.ts";
 import { fetchLeetcodeProfile } from "../leetcode.ts";
-import { profilesTable } from "../schema.ts";
+import { profiles } from "../schema.ts";
 import { PrivateContext } from "./composer.ts";
 
-const titleSlug = Deno.env.get("TITLE_SLUG") || "add-two-integers";
+const problemSlug = Deno.env.get("TITLE_SLUG") || "add-two-integers";
 
-type ConvoHandler = ConversationBuilder<PrivateContext, PrivateContext>;
+type ConversationHandler = ConversationBuilder<
+  PrivateContext,
+  ChatTypeContext<Context, "private">
+>;
 
-export const profileRegistration: ConvoHandler = async (convo, ctx) => {
+export const registerProfile: ConversationHandler = async (convo, ctx) => {
   const [existingUser] = await db.select()
-    .from(profilesTable)
-    .where(eq(profilesTable.userId, ctx.from.id))
+    .from(profiles)
+    .where(eq(profiles.userId, ctx.from.id))
     .limit(1);
 
   if (existingUser) {
-    await ctx.reply(ctx.text.alreadyRegistered());
+    await ctx.reply(
+      await convo.external((ctx) => ctx.text.alreadyRegistered()),
+    );
     return;
   }
 
   let username = "";
-  let isUsernameValid = false;
+  let isValid = false;
 
   do {
-    await ctx.reply(ctx.text.enterUsername());
+    await ctx.reply(await convo.external((ctx) => ctx.text.enterUsername()));
 
-    const messageCtx = await convo.waitFor("message:text", {
-      otherwise: (ctx) => ctx.reply(ctx.text.sendTextMessage()),
+    const message = await convo.waitFor("message:text", {
+      otherwise: async (ctx) =>
+        ctx.reply(await convo.external((ctx) => ctx.text.sendTextMessage())),
     });
 
-    username = messageCtx.msg.text.trim().toLowerCase();
+    username = message.msg.text.trim().toLowerCase();
 
-    const [duplicateProfile] = await db.select()
-      .from(profilesTable)
-      .where(eq(profilesTable.username, username))
+    const [existingProfile] = await db.select()
+      .from(profiles)
+      .where(eq(profiles.username, username))
       .limit(1);
 
-    if (duplicateProfile) {
-      await ctx.reply(ctx.text.usernameTaken());
+    if (existingProfile) {
+      await ctx.reply(await convo.external((ctx) => ctx.text.usernameTaken()));
       continue;
     }
 
@@ -50,24 +56,31 @@ export const profileRegistration: ConvoHandler = async (convo, ctx) => {
     if (errors) {
       for (const error of errors) {
         if (error.message === "That user does not exist.") {
-          await ctx.reply(ctx.text.userNotFound());
+          await ctx.reply(
+            await convo.external((ctx) => ctx.text.userNotFound()),
+          );
           break;
         }
       }
-      isUsernameValid = false;
+      isValid = false;
     } else {
-      isUsernameValid = true;
+      isValid = true;
       await convo.external(async (ctx) =>
-        (await ctx.session).lUsername = username
+        (await ctx.session).username = username
       );
     }
-  } while (!isUsernameValid);
+  } while (!isValid);
 
-  const verifySubmissionButton = new InlineKeyboard()
-    .text(ctx.text.verifySubmission(), "verifySubmissionOnTime");
+  const verifyButton = new InlineKeyboard()
+    .text(
+      await convo.external((ctx) => ctx.text.verifySubmission()),
+      "verify-submission",
+    );
 
   await ctx.reply(
-    ctx.text.solveProblem(`https://leetcode.com/problems/${titleSlug}`),
-    { reply_markup: verifySubmissionButton },
+    await convo.external((ctx) =>
+      ctx.text.solveProblem(`https://leetcode.com/problems/${problemSlug}`)
+    ),
+    { reply_markup: verifyButton },
   );
 };
