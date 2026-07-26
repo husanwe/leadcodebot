@@ -10,7 +10,6 @@
     "ioredis": "npm:ioredis@^5.11.1"
   },
   "tasks": {
-    "dev": "deno watch --env -INE src/main.ts",
-    "db:push": "deno --env -A --node-modules-dir npm:drizzle-kit@rc push"
+    "db:generate": "deno run -ERW --node-modules-dir drizzle-kit generate"
   }
 }
