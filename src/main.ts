@@ -1,9 +1,10 @@
+import { resolve } from "@std/path";
 import { migrate } from "drizzle-orm/neon-http/migrator";
 import { bot } from "./bot.ts";
 import { db } from "./db.ts";
 import { getEnv } from "./util.ts";
 
-await migrate(db, { migrationsFolder: "../drizzle.config.ts" });
+await migrate(db, { migrationsFolder: resolve("drizzle.config.ts") });
 
 if (getEnv("DENO_DEPLOY", false) === "true") {
   const { startWebhook } = await import("./webhook.ts");
