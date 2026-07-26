@@ -4,10 +4,10 @@ import { bot } from "./bot.ts";
 import { db } from "./db.ts";
 import { getEnv } from "./util.ts";
 
-const baseDir = import.meta.dirname || Deno.cwd();
+const baseDir = import.meta.dirname ?? Deno.cwd();
 
 await migrate(db, {
-  migrationsFolder: resolve(baseDir, "./drizzle"),
+  migrationsFolder: resolve(baseDir, "../drizzle"),
 });
 
 if (getEnv("DENO_DEPLOY", false) === "true") {
