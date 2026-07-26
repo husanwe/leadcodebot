@@ -13,15 +13,16 @@ const timestamps = {
     .notNull().$onUpdate(() => new Date()),
 };
 
-export const usersTable = pgTable("users", {
+export const users = pgTable("users", {
   id: bigint({ mode: "number" }).primaryKey(),
+  locale: varchar({ length: 2 }).notNull().default("en"),
   ...timestamps,
 });
 
-export const profilesTable = pgTable("profiles", {
+export const profiles = pgTable("profiles", {
   id: smallint().primaryKey().generatedAlwaysAsIdentity(),
   username: varchar({ length: 30 }).notNull().unique(),
   userId: bigint("user_id", { mode: "number" }).notNull().unique()
-    .references(() => usersTable.id, { onDelete: "cascade" }),
+    .references(() => users.id, { onDelete: "cascade" }),
   ...timestamps,
 });

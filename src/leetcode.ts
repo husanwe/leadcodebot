@@ -18,7 +18,7 @@ const profileQuery =
     }
   }`;
 
-type SubmissionNum = {
+type SubmissionCount = {
   difficulty: "All" | "Easy" | "Medium" | "Hard";
   submissions: number;
   count: number;
@@ -31,11 +31,11 @@ type SubmissionList = {
   time: string;
 };
 
-type LeetcodeProfile = {
+type LeetcodeProfileResponse = {
   data: {
     matchedUser: {
       submitStats: {
-        acSubmissionNum: SubmissionNum[];
+        acSubmissionNum: SubmissionCount[];
       };
     };
     recentSubmissionList: SubmissionList[];
@@ -60,8 +60,9 @@ export const fetchLeetcodeProfile = async (
     }),
   });
 
-  if (response.ok) {
-    return (await response.json()) as LeetcodeProfile;
+  if (!response.ok) {
+    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
   }
-  throw new Error(`Error fetching LeetCode profile: ${response.statusText}`);
+
+  return (await response.json()) as LeetcodeProfileResponse;
 };
