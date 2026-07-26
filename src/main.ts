@@ -4,7 +4,11 @@ import { bot } from "./bot.ts";
 import { db } from "./db.ts";
 import { getEnv } from "./util.ts";
 
-await migrate(db, { migrationsFolder: resolve("drizzle.config.ts") });
+const baseDir = import.meta.dirname || Deno.cwd();
+
+await migrate(db, {
+  migrationsFolder: resolve(baseDir, "./drizzle"),
+});
 
 if (getEnv("DENO_DEPLOY", false) === "true") {
   const { startWebhook } = await import("./webhook.ts");
